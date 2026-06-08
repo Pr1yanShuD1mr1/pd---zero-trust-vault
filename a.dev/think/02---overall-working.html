@@ -1,0 +1,28 @@
+<style> body{ white-space: pre; font-family: monospace; font-weight: bold; } </style>.
+
+
+overall procedure
+
+1.
+in encryption, 
+> request user to create a password.
+> ask user to select a file.
+> generate a symmetric key.
+> using key, encrypt the selected file.
+> put encrypted file in the file system.
+> encrypt the password.
+> make a record of : { encrypt-password : [encrypt-file-reference, original-file-extension] }
+> return key
+
+2.
+in decryption,
+> ask user to provide password & key.
+> using key, encrypt the password. 
+> check for presence of encrypted-password in stored records.
+> retrieve associated reference, to locate the encrypted file.
+> decrypt the file and add extension.
+> return decrypt file
+
+
+
+

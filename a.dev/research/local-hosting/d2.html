@@ -1,0 +1,153 @@
+<style> body{white-space: pre; font-family: monospace; font-weight: bolder;} </style>.
+
+
+
+
+LocalServer.java
+""""
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+
+public class LocalServer {
+
+    private static HttpServer server;
+
+    public static void main(String[] args) throws Exception {
+
+        // Create server at localhost:8080
+        server = HttpServer.create(new InetSocketAddress(8080), 0);
+
+        // Create a webpage response
+        server.createContext("/", new MyHandler());
+
+        // Start server
+        server.setExecutor(null);
+        server.start();
+
+        System.out.println("Server started at http://localhost:8080");
+        System.out.println("Press ENTER to stop the server...");
+
+        // Wait for user input to stop server
+        System.in.read();
+
+        // Stop server
+        server.stop(0);
+        System.out.println("Server stopped.");
+    }
+
+    // Handler for webpage
+    static class MyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            String response = "<html><body>"
+                    + "<h1>Hello from Java Server!</h1>"
+                    + "<p>Server is running on localhost:8080</p>"
+                    + "</body></html>";
+
+            exchange.sendResponseHeaders(200, response.length());
+
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+}
+""""
+
+
+# compile
+> javac LocalServer.java
+# run
+> java LocalServer
+
+# Open in Browser
+# http://localhost:8080
+
+# on browswer 
+# Hello from Java Server!
+# Press ENTER to stop the server...
+
+# How to Close the Server
+# Simply press: ENTER
+# The server will stop
+
+# firce Stop
+# Ctrl + C
+
+
+
+
+
+
+# finding process using port
+> netstat -ano | findstr :8080
+# TCP    0.0.0.0:8080     0.0.0.0:0     LISTENING     1234
+
+# kill process 
+> taskkill /PID 1234 /F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+""""
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+
+public class MyHttpHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+        String response = "Hello, World!";
+        exchange.sendResponseHeaders(200, response.length());
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+    }
+
+    public static void main(String[] args) throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+        server.createContext("/", new MyHttpHandler());
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        System.out.println("Server is running on port 8000...");
+    }
+}
+""""
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure File Vault</title>
+    <style>
+        /* Modern Minimalist Neo-Brutalist styling */
+        :root {
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --border-color: #1a1a1a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* Sidebar Layout */
+        #sidebar {
+            width: 260px;
+            border-right: 3px solid var(--border-color);
+            background-color: var(--panel-bg);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .label-box {
+            border: 3px solid var(--border-color);
+            padding: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            background-color: DarkCyan;
+            color: #fff;
+            box-shadow: 4px 4px 0px var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            border: 3px solid var(--border-color);
+            background: var(--panel-bg);
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            box-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        .mode-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--border-color);
+        }
+
+        .mode-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .mode-btn.active {
+            background: var(--border-color);
+            color: #fff;
+        }
+
+        /* Main Viewport */
+        #main-container {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #content-box {
+            width: 100%;
+            max-width: 650px;
+            min-height: 480px;
+            border: 4px solid var(--border-color);
+            background-color: var(--panel-bg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 8px 8px 0px var(--border-color);
+
+            background-image: url('Images/feelGood.gif');
+            background-repeat: no-repeat; 
+            background-position: center;
+            background-size: cover;
+        }
+
+        #content-box:hover{
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mode-header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+
+        .mode-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .mode-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .mode-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            
+        }
+
+        /* Form Components */
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .upload-area:hover {
+            background: #f0f7ff;
+            border-color: var(--accent-color);
+        }
+
+        .upload-area.key-zone:hover {
+            border-color: #ea580c;
+            background: #fff7ed;
+        }
+
+        .file-info-badge {
+            margin-top: 10px;
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+
+        /* Results / Output Boxes */
+        .result-box {
+            background: #f0fdf4;
+            border: 2px dashed var(--success);
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .result-box.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .hash-output {
+            font-family: monospace;
+            background: #fff;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            word-break: break-all;
+            user-select: all;
+        }
+
+        /* Actions */
+        .action-button {
+            width: 100%;
+            border: 3px solid var(--border-color);
+            background: var(--accent-color);
+            color: white;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: auto;
+            box-shadow: 4px 4px 0px var(--border-color);
+            transition: all 0.1s;
+        }
+
+        .action-button:hover {
+            background: var(--accent-hover);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--border-color);
+        }
+
+        .action-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .status-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div class="label-box">Zero Trust Vault</div>
+        <hr>
+        <button id="btn-mode-1" class="mode-btn active" onclick="switchMode(1)">1 ➔ Encrypt & Store</button>
+        <button id="btn-mode-2" class="mode-btn" onclick="switchMode(2)">2 ➔ Retrieve File</button>
+    </div>
+
+    <div id="main-container">
+        <div id="content-box">
+            
+            <div class="mode-header">
+                <div id="mode-title" class="mode-title">Encrypt & Store File</div>
+                <div id="mode-desc" class="mode-description">Upload a local file to lock it inside the vault. <br>You will receive an auto-downloaded key file for safe recovery.</div>
+            </div>
+
+            <div id="view-mode-1" class="mode-content">
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div>Click or Drop File to Upload</div>
+                    <div id="file-status" class="file-info-badge">No file selected</div>
+                    <input type="file" id="fileInput" class="hidden" onchange="fileSelected(this)">
+                </div>
+                
+                <div id="encryption-result" class="result-box hidden">
+                    <strong style="color: var(--success)">✓ File Stored Successfully!</strong>
+                    <span>Your master access key file has been downloaded from the server! Keep it safe.</span>
+                    <div class="hash-output" id="generated-hash-info" style="font-size: 0.85rem; color: var(--text-muted);"></div>
+                </div>
+            </div>
+
+            <div id="view-mode-2" class="mode-content hidden">
+                <div class="upload-area key-zone" onclick="document.getElementById('keyFileInput').click()">
+                    <div>Click or Drop your .key file to Authorize Decryption</div>
+                    <div id="key-file-status" class="file-info-badge" style="background: #ffedd5; color: #ea580c;">No key file uploaded</div>
+                    <input type="file" id="keyFileInput" accept=".key" class="hidden" onchange="keyFileSelected(this)">
+                </div>
+
+                <div id="retrieval-result" class="result-box hidden">
+                    <strong id="retrieval-status-title">✓ File Located!</strong>
+                    <span id="retrieval-msg">Your file is ready for download:</span>
+                    <div class="hash-output" id="retrieved-file-name" style="background:#f4f4f4;"></div>
+                </div>
+            </div>
+
+            <button id="action-btn" class="action-button" onclick="handleAction()">EXECUTE ENCRYPTION</button>
+            
+            <div class="status-footer">
+                <span id="status-display">System Status: Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Server Base URL Configuration
+        const BASE_URL = "http://localhost:8080";
+
+        let currentMode = 1;
+        let selectedFileRef = null;
+        let selectedKeyFileRef = null;
+
+        function switchMode(modeNumber) {
+            currentMode = modeNumber;
+            
+            const title = document.getElementById('mode-title');
+            const desc = document.getElementById('mode-desc');
+            const view1 = document.getElementById('view-mode-1');
+            const view2 = document.getElementById('view-mode-2');
+            const btn1 = document.getElementById('btn-mode-1');
+            const btn2 = document.getElementById('btn-mode-2');
+            const actionBtn = document.getElementById('action-btn');
+
+            resetFeedbackBoxes();
+
+            if (modeNumber === 1) {
+                title.innerText = "Encrypt & Store File";
+                desc.innerText = "Upload a local file to lock it inside the secure vault. You will receive an auto-downloaded key file for safe recovery.";
+                actionBtn.innerText = "EXECUTE ENCRYPTION";
+                
+                view1.classList.remove('hidden');
+                view2.classList.add('hidden');
+                btn1.classList.add('active');
+                btn2.classList.remove('active');
+            } else {
+                title.innerText = "Retrieve File from Key File";
+                desc.innerText = "Provide your valid cryptographic unique .key file to extract your file back safely.";
+                actionBtn.innerText = "DECRYPT & RETRIEVE";
+
+                view1.classList.add('hidden');
+                view2.classList.remove('hidden');
+                btn2.classList.add('active');
+                btn1.classList.remove('active');
+            }
+        }
+
+        function fileSelected(input) {
+            const statusBadge = document.getElementById('file-status');
+            if(input.files.length > 0) {
+                selectedFileRef = input.files[0];
+                statusBadge.innerText = `📄 ${selectedFileRef.name} (${Math.round(selectedFileRef.size/1024)} KB)`;
+            } else {
+                selectedFileRef = null;
+                statusBadge.innerText = "No file selected";
+            }
+        }
+
+        function keyFileSelected(input) {
+            const statusBadge = document.getElementById('key-file-status');
+            if(input.files.length > 0) {
+                selectedKeyFileRef = input.files[0];
+                statusBadge.innerText = `🔑 ${selectedKeyFileRef.name}`;
+            } else {
+                selectedKeyFileRef = null;
+                statusBadge.innerText = "No key file uploaded";
+            }
+        }
+
+        function resetFeedbackBoxes() {
+            document.getElementById('encryption-result').classList.add('hidden');
+            document.getElementById('retrieval-result').classList.add('hidden');
+            document.getElementById('status-display').innerText = "System Status: Ready";
+        }
+
+        // Helper function to handle response file downloading
+        function triggerBlobDownload(blob, defaultFilename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = defaultFilename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        async function handleAction() {
+            const status = document.getElementById('status-display');
+            resetFeedbackBoxes();
+
+            if (currentMode === 1) {
+                // --- MODE 1: SEND FILE -> GET KEY FILE ---
+                if (!selectedFileRef) {
+                    alert("Please choose a file to encrypt first!");
+                    return;
+                }
+
+                status.innerText = "System Status: Sending file payload to secure node...";
+                
+                const formData = new FormData();
+                // Appends file entry matching standard multipart key names
+                formData.append("file", selectedFileRef);
+
+                try {
+                    const response = await fetch(`${BASE_URL}/putFile`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error(`Server returned status code: ${response.status}`);
+
+                    // Expecting the server to send the raw .key file binary directly back
+                    const blob = await response.blob();
+                    const generatedKeyName = `vault_key_${selectedFileRef.name.split('.')[0]}.key`;
+                    
+                    triggerBlobDownload(blob, generatedKeyName);
+
+                    // Render UI feedback success layout
+                    const resultBox = document.getElementById('encryption-result');
+                    const hashInfo = document.getElementById('generated-hash-info');
+                    hashInfo.innerText = `Key generated from server stream successfully saved.`;
+                    resultBox.classList.remove('hidden');
+
+                    // Reset raw file elements back to clear defaults
+                    document.getElementById('fileInput').value = "";
+                    document.getElementById('file-status').innerText = "No file selected";
+                    selectedFileRef = null;
+                    status.innerText = "System Status: Complete. Key Downloaded.";
+
+                } catch (error) {
+                    console.error(error);
+                    status.innerText = "System Status: Transmission Error.";
+                    alert(`Failed to encrypt file: ${error.message}`);
+                }
+
+            } else {
+                // --- MODE 2: SEND KEY FILE -> GET ORIGINAL FILE ---
+                if (!selectedKeyFileRef) {
+                    alert("Please upload your validation `.key` token file first!");
+                    return;
+                }
+
+                status.innerText = "System Status: Uplinking token signature key back to node array...";
+
+                const formData = new FormData();
+                formData.append("keyFile", selectedKeyFileRef);
+
+                try {
+                    const response = await fetch(`${BASE_URL}/getFile`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const resultBox = document.getElementById('retrieval-result');
+                    const titleText = document.getElementById('retrieval-status-title');
+                    const msgText = document.getElementById('retrieval-msg');
+                    const fileOut = document.getElementById('retrieved-file-name');
+
+                    if (response.ok) {
+                        // Extract filename from the Content-Disposition headers if configured by backend
+                        let outputFilename = "recovered_file";
+                        const disposition = response.headers.get('content-disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            const matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) { 
+                                outputFilename = matches[1].replace(/['"]/g, '');
+                            }
+                        }
+
+                        // Process the return data binary and trigger direct download file save
+                        const blob = await response.blob();
+                        triggerBlobDownload(blob, outputFilename);
+
+                        // Success UI Status Updates
+                        resultBox.classList.remove('error');
+                        titleText.innerText = "✓ Key Validated & File Recovered!";
+                        titleText.style.color = "var(--success)";
+                        msgText.innerText = "The microservice verified the data blocks. File downloaded:";
+                        fileOut.innerText = `📦 ${outputFilename}`;
+                        status.innerText = "System Status: Decryption Successful.";
+                    } else {
+                        // Handle server-side rejection (e.g., 400/403/404)
+                        resultBox.classList.add('error');
+                        titleText.innerText = "❌ Verification Failure";
+                        titleText.style.color = "#ef4444";
+                        msgText.innerText = "The server rejected this key. Please confirm your token file is uncorrupted.";
+                        fileOut.innerText = "HTTP Protocol Error Code: Access Refused";
+                        status.innerText = "System Status: Storage Core Exception.";
+                    }
+                    
+                    resultBox.classList.remove('hidden');
+
+                    // Always clean up validation inputs immediately post transaction loop
+                    document.getElementById('keyFileInput').value = "";
+                    document.getElementById('key-file-status').innerText = "No key file uploaded";
+                    selectedKeyFileRef = null;
+
+                } catch (error) {
+                    console.error(error);
+                    status.innerText = "System Status: Network Request Aborted.";
+                    alert(`Failed to retrieve file from local server: ${error.message}`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

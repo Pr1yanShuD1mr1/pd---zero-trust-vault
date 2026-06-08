@@ -1,0 +1,181 @@
+<style> body{ white-space: pre; font-family: monospace; } </style>.
+
+
+
+AES : Advanced Encryption Standard
+AES is a symmetric block cipher, that operates in fixed-size blocks (128 bits) of data, using a variable-size key (128/192/256 bits).
+AES is used to protect classified information and recommended for widespread use.
+
+AES allows for three different key lengths and performs a series of rounds wrt it.
+
+    128 bits    : 10 rounds
+    192 bits    : 12 rounds
+    256 bits    : 14 rounds
+
+
+AES-256 refers to a data encryption standard that uses a 256-bit key with the Advanced Encryption Standard (AES) algorithm.
+
+
+
+AES algorithm
+AES algorithm is an iterative process, comprised of a series of repeating rounds of transformation.
+
+State Representation: 
+128-bit block of data, is represented as 4x4 matrix of byte.
+
+e.g.
+string  : HELLO_WORLD_2026
+size    : 16 char : 128 bits
+hex rep : 48 45 4C 4C 4F 5F 57 4F 52 4C 44 5F 32 30 32 36
+
+state matrix 
+    [ 48  4F  52  32 ]
+    [ 45  5F  4C  30 ]
+    [ 4C  57  44  32 ]
+    [ 4C  4F  5F  36 ]
+
+
+step 1 :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SubBytes (S-box substitution)
+ShiftRows (permutation)
+MixColumns (diffusion)
+AddRoundKey (XORing with the key)
+
+For AES-256, 
+there are 14 rounds of transformation. 
+process begins with a key expansion phase to generate a series of 11 round keys from the original 256-bit key.
+
+The data, which is referred to as the "state," is processed in each round through a sequence of four operations:
+
+SubBytes: This is a non-linear substitution step where each byte in the state is replaced with another byte according to a fixed lookup table (the "S-box"). This step provides the confusion required for cryptographic strength.
+ShiftRows: This is a transposition step where the last three rows of the state are shifted left by a certain number of bytes. The first row is not shifted. This step provides diffusion.
+MixColumns: This step operates on the columns of the state, mixing their bytes. Each column is treated as a polynomial over the finite field GF(2⁸), and it is multiplied by a fixed polynomial. This step ensures that the influence of one byte is diffused to other bytes within the same column.
+AddRoundKey: In this step, the round key is XORed with the state. This combines the data with the key material for the round.
+The final round is slightly different: it omits the MixColumns step to make the cipher easier to implement efficiently in hardware and software.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's assume 
+we have a state matrix S at the beginning of a round and a round key K.
+
+Initial State (S)
+S =  | a₁  a₂  a₃  a₄ |
+     | b₁  b₂  b₃  b₄ |
+     | c₁  c₂  c₃  c₄ |
+     | d₁  d₂  d₃  d₄ |
+Where each ai, bi, etc., is a byte (e.g., 0x53).
+
+
+Step 1: SubBytes
+Each byte in the state is replaced by a different byte from the S-box.
+
+The byte a₁ is replaced by a₁' = S-box(a₁).
+The byte b₁ is replaced by b₁' = S-box(b₁).
+...and so on for all 16 bytes.
+
+The state matrix S becomes a new matrix S', where every byte has been substituted.
+
+S' = | S-box(a₁)  S-box(a₂)  S-box(a₃)  S-box(a₄) |
+     | S-box(b₁)  S-box(b₂)  S-box(b₃)  S-box(b₄) |
+     | S-box(c₁)  S-box(c₂)  S-box(c₃)  S-box(c₄) |
+     | S-box(d₁)  S-box(d₂)  S-box(d₃)  S-box(d₄) |
+For our example, let's just focus on the first byte, which is now a₁'.
+
+
+Step 2: ShiftRows
+The bytes in each row are shifted to the left.
+
+Row 1: No shift.     (a₁', a₂', a₃', a₄')
+Row 2: Shifted by 1. (b₄', b₁', b₂', b₃')
+Row 3: Shifted by 2. (c₃', c₄', c₁', c₂')
+Row 4: Shifted by 3. (d₂', d₃', d₄', d₁')
+
+The state matrix is now S''.
+
+S'' = | a₁'  a₂'  a₃'  a₄' |
+      | b₄'  b₁'  b₂'  b₃' |
+      | c₃'  c₄'  c₁'  c₂' |
+      | d₂'  d₃'  d₄'  d₁' |
+
+This step has moved the bytes around, preparing for the next mixing step.
+
+
+Step 3: MixColumns
+This step mixes the bytes within each column. 
+Let's focus on the first column of S'': Col₀ = [a₁', b₄', c₃', d₂']ᵀ
+
+This column is treated as a polynomial and multiplied by a fixed polynomial (02)x³ + (03)x² + (01)x + (01) in GF(2⁸). 
+The result is a new polynomial which is converted back into four new bytes, creating the first column of the next state, S'''.
+Let the new bytes be a₁', b₁'', c₁'', and d₁''.
+For our example, let's assume the calculation for the first byte of the new column is: a₁'' = (S-box(A₁) * 02) ⊕ (S-box(B₄) * 03) ⊕ c₃' ⊕ d₂' (The ⊕ symbol denotes the XOR operation. The multiplication by 02 and 03 are specific, defined operations in GF(2⁸)).
+The result of this operation and the other three in the column is the new first column of S'''. The exact calculation is complex, but the key takeaway is that every byte in the new column is a function of all four original bytes. This is where diffusion becomes powerful.
+
+
+Step 4: AddRoundKey
+Finally, the round key K is XORed with the state matrix S'''.
+The new state for the next round, S_next, is calculated as: S_next = S''' ⊕ K
+For the first byte of the state: S_next[0,0] = a₁'' ⊕ K[0,0]
+This step applies the key material, ensuring that the data's transformation in this round is directly tied to the secret key.
+The process of these four steps being performed 11 times (for a total of 14 rounds in AES-256, with the final round omitting MixColumns) results in a final state that is the ciphertext. Reversing the process with the same key but using the inverse S-box and other inverse operations decrypts the data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

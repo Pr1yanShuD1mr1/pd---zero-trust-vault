@@ -1,0 +1,243 @@
+<style> body{ white-space: pre; font-family: monospace; } </style>.
+
+
+
+
+
+
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+
+public class Aes256Example {
+
+    // The AES algorithm specification
+    private static final String ALGORITHM = "AES";
+    // The mode of operation: Cipher Block Chaining
+    private static final String MODE = "CBC";
+    // The padding scheme: PKCS5Padding (PKCS7Padding is the modern standard)
+    private static final String PADDING = "PKCS5Padding";
+    // The full transformation string
+    private static final String TRANSFORMATION = ALGORITHM + "/" + MODE + "/" + PADDING;
+
+    /**
+     * The main method to demonstrate encryption and decryption.
+     */
+    public static void main(String[] args) throws Exception {
+        // The plaintext data to be encrypted
+        String plaintext = "This is a secret message that needs to be securely encrypted using AES-256.";
+
+        // 1. Generate a key and an IV
+        // In a real application, the key and IV would be managed securely and not regenerated on every run.
+        SecretKey secretKey = generateKey();
+        byte[] iv = generateIv();
+
+        System.out.println("Original Plaintext: " + plaintext);
+
+        // 2. Encrypt the plaintext
+        String encryptedText = encrypt(plaintext, secretKey, iv);
+        System.out.println("Encrypted Text (Base64): " + encryptedText);
+
+        // 3. Decrypt the ciphertext
+        String decryptedText = decrypt(encryptedText, secretKey, iv);
+        System.out.println("Decrypted Plaintext: " + decryptedText);
+    }
+
+    /**
+     * Encrypts a string using AES-256/CBC/PKCS5Padding.
+     * @param text The plaintext to encrypt.
+     * @param key The AES secret key.
+     * @param iv The initialization vector.
+     * @return The encrypted text as a Base64 encoded string.
+     * @throws Exception If encryption fails.
+     */
+    public static String encrypt(String text, SecretKey key, byte[] iv) throws Exception {
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+        byte[] encryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    /**
+     * Decrypts a Base64 encoded string using AES-256/CBC/PKCS5Padding.
+     * @param encryptedText The Base64 encoded ciphertext.
+     * @param key The AES secret key.
+     * @param iv The initialization vector.
+     * @return The decrypted plaintext string.
+     * @throws Exception If decryption fails.
+     */
+    public static String decrypt(String encryptedText, SecretKey key, byte[] iv) throws Exception {
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Generates a cryptographically strong AES-256 key.
+     * @return A new SecretKey instance.
+     * @throws NoSuchAlgorithmException If AES algorithm is not available.
+     */
+    private static SecretKey generateKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
+        keyGenerator.init(256); // Specify the key size
+        return keyGenerator.generateKey();
+    }
+
+    /**
+     * Generates a cryptographically strong Initialization Vector (IV).
+     * @return A new, random IV byte array.
+     */
+    private static byte[] generateIv() {
+        byte[] iv = new byte[16]; // The block size for AES is 16 bytes
+        new SecureRandom().nextBytes(iv);
+        return iv;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+
+public class Aes256Example {
+
+    // The AES algorithm specification
+    private static final String ALGORITHM = "AES";
+    // The mode of operation: Cipher Block Chaining
+    private static final String MODE = "CBC";
+    // The padding scheme: PKCS5Padding (PKCS7Padding is the modern standard)
+    private static final String PADDING = "PKCS5Padding";
+    // The full transformation string
+    private static final String TRANSFORMATION = ALGORITHM + "/" + MODE + "/" + PADDING;
+
+    /**
+     * The main method to demonstrate encryption and decryption.
+     */
+    public static void main(String[] args) throws Exception {
+        // The plaintext data to be encrypted
+        String plaintext = "This is a secret message that needs to be securely encrypted using AES-256.";
+
+        // 1. Generate a key and an IV
+        // In a real application, the key and IV would be managed securely and not regenerated on every run.
+        SecretKey secretKey = generateKey();
+        byte[] iv = generateIv();
+
+        System.out.println("Original Plaintext: " + plaintext);
+
+        // 2. Encrypt the plaintext
+        String encryptedText = encrypt(plaintext, secretKey, iv);
+        System.out.println("Encrypted Text (Base64): " + encryptedText);
+
+        // 3. Decrypt the ciphertext
+        String decryptedText = decrypt(encryptedText, secretKey, iv);
+        System.out.println("Decrypted Plaintext: " + decryptedText);
+    }
+
+    /**
+     * Encrypts a string using AES-256/CBC/PKCS5Padding.
+     * @param text The plaintext to encrypt.
+     * @param key The AES secret key.
+     * @param iv The initialization vector.
+     * @return The encrypted text as a Base64 encoded string.
+     * @throws Exception If encryption fails.
+     */
+    public static String encrypt(String text, SecretKey key, byte[] iv) throws Exception {
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+        byte[] encryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    /**
+     * Decrypts a Base64 encoded string using AES-256/CBC/PKCS5Padding.
+     * @param encryptedText The Base64 encoded ciphertext.
+     * @param key The AES secret key.
+     * @param iv The initialization vector.
+     * @return The decrypted plaintext string.
+     * @throws Exception If decryption fails.
+     */
+    public static String decrypt(String encryptedText, SecretKey key, byte[] iv) throws Exception {
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Generates a cryptographically strong AES-256 key.
+     * @return A new SecretKey instance.
+     * @throws NoSuchAlgorithmException If AES algorithm is not available.
+     */
+    private static SecretKey generateKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
+        keyGenerator.init(256); // Specify the key size
+        return keyGenerator.generateKey();
+    }
+
+    /**
+     * Generates a cryptographically strong Initialization Vector (IV).
+     * @return A new, random IV byte array.
+     */
+    private static byte[] generateIv() {
+        byte[] iv = new byte[16]; // The block size for AES is 16 bytes
+        new SecureRandom().nextBytes(iv);
+        return iv;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

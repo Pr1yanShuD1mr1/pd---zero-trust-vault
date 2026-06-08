@@ -1,0 +1,119 @@
+<style> body{white-space: pre; font-family: monospace; font-weight: bolder;} </style>.https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html
+
+
+
+
+com.sun.net.httpserver
+it is a lightweight, extensible HTTP server library.
+it is designed for creating simple applications that need to embed an HTTP server without adding a large external dependency. 
+
+fetures
+Embedded        : runs within the same JVM as the application.
+Lightweight     : minimal dependencies and a small footprint.
+Simple API      : core classes are easy to understand and use for basic tasks.
+Configurable    : allow to set the port, bind to a specific address, and configure an Executor for handling requests.
+Extensible      : allow to define the logic for handling requests by implementing the HttpHandler interface.
+
+https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html
+
+
+
+
+
+
+
+
+
+HttpServer 
+it is used to implements a simple HTTP server, which handles HTTPS requests.
+it encapsulates the server's configuration and lifecycle.
+
+it instance,
+ a. is bound to an IP address and port number 
+ b. which listens for incoming TCP connections from clients on this address.
+
+e.g.
+    HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+    server.createContext("/", handler);
+    server.setExecutor(null); // creates a default executor
+    server.start();
+    server.stop();
+
+
+
+
+
+HttpHandler
+it is an interface, whihc helps in defining how an HTTP request is processed.
+signature : void handle(HttpExchange exchange) throws IOException
+it contains a single abstract method 'handle(HttpExchange exchange)',
+which is invoked for each incoming request that matches a context defined on the HttpServer. 
+a single HttpServer can have multiple HttpHandlers, each linked to a different URI path or pattern.
+
+
+it is responsible for inspecting the request, generating a response, and sending it back to the client.
+e.g.
+    // Inspect the request
+    String requestMethod = exchange.getRequestMethod();
+    System.out.println("Request Method: " + requestMethod);
+
+    // Generate a response
+    String responseBody = "Hello, Client!";
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(200, responseBody.length());
+
+    // Send the response back to the client
+    try (OutputStream os = exchange.getResponseBody()) {
+        os.write(responseBody.getBytes());
+    }
+
+
+HttpHandler interface can be implemented in two ways:
+ a. by creating a class  that implements the HttpHandler interface and provides an implementation for the handle(HttpExchange exchange) method.
+ e.g.
+    public class MyHttpHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String response = "Hello, World!";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        }
+    }
+
+ b. by using a lambda expression to implement the HttpHandler interface.
+ e.g.
+    HttpHandler handler = (exchange) -> {
+        String response = "Hello, World!";
+        exchange.sendResponseHeaders(200, response.length());
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
+    };
+
+
+
+
+
+HttpExchange
+HttpExchange instance encapsulates a HTTP request received and a response to be generated in one exchange. 
+HttpExchange instance represents a single request-response cycle.
+
+getRequestMethod()              to determine the command
+getRequestHeaders()             to examine the request headers (if needed)
+getRequestBody()                returns a InputStream for reading the request body.         After reading the request body, the stream is close.
+getResponseHeaders()            to set any response headers, except content-length
+sendResponseHeaders(int,long)   to send the response headers.
+getResponseBody()               to get a OutputStream to send the response body.            When the response body has been written, the stream must be closed to terminate the exchange.
+
+Exchanges are terminated when both the request InputStream and response OutputStream are closed. 
+Closing the OutputStream, implicitly closes the InputStream (if it is not already closed).
+
+
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+<style> body{ white-space: pre; font-family: monospace; font-weight: bold; } </style>.
+
+
+Components
+
+1.
+application
+contains the main application logic.
+interact with user via browser.
+coordinates with all other classes/components.
+
+2.
+cipher
+Provides encryption/decryption functionality.
+use the AES-256 algorithm.
+
+3.
+records
+maintains metadata for encrypted files.
+contain record, which map an encryption password to encryptedfile-meta data.
+record format is as follows 
+    { encrypt-password : [encrypt-file-reference, original-file-extension] }
+
+4.
+file system
+secure repository for sensitive data.
+Stores all encrypted files.
+
+
+
+

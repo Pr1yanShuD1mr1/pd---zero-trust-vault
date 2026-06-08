@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encryption System</title>
+    <style>
+        /* General Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: 200px;
+            border-right: 3px solid #000;
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .label-box {
+            border: 2px solid #000;
+            padding: 5px 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .mode-btn {
+            border: 2px solid #000;
+            background: #fff;
+            padding: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .mode-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .mode-btn.active {
+            background: #000;
+            color: #fff;
+        }
+
+        /* Main Content Area */
+        #main-container {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #content-box {
+            width: 80%;
+            height: 70%;
+            border: 4px solid #000;
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .mode-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Elements */
+        .upload-area {
+            border: 2px dashed #000;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .upload-area:hover {
+            background: #f9f9f9;
+        }
+
+        .action-button {
+            border: 3px solid #000;
+            background: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            align-self: center;
+            margin-top: auto;
+        }
+
+        .action-button:active {
+            background: #000;
+            color: #fff;
+        }
+
+        .status-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div class="label-box">label</div>
+        <button class="mode-btn active" onclick="switchMode(1)">mode 1</button>
+        <button class="mode-btn" onclick="switchMode(2)">mode 2</button>
+    </div>
+
+    <div id="main-container">
+        <div id="content-box">
+            <div id="mode-header" class="mode-title">#mode 1</div>
+
+            <div id="view-mode-1" class="mode-content">
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <span>Click to Upload File</span>
+                    <input type="file" id="fileInput" class="hidden">
+                </div>
+            </div>
+
+            <div id="view-mode-2" class="mode-content hidden">
+                <div class="upload-area" onclick="document.getElementById('hashInput').click()">
+                    <span>upload hash-key</span>
+                    <input type="file" id="hashInput" class="hidden">
+                </div>
+            </div>
+
+            <button class="action-button" onclick="handleAction()">ENCRYPT</button>
+            
+            <div class="status-text" id="status-display">Status: Ready</div>
+        </div>
+    </div>
+
+    <script>
+        function switchMode(modeNumber) {
+            // Update Title
+            document.getElementById('mode-header').innerText = `#mode ${modeNumber}`;
+
+            // Update Views
+            const view1 = document.getElementById('view-mode-1');
+            const view2 = document.getElementById('view-mode-2');
+            const buttons = document.querySelectorAll('.mode-btn');
+
+            if (modeNumber === 1) {
+                view1.classList.remove('hidden');
+                view2.classList.add('hidden');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                view1.classList.add('hidden');
+                view2.classList.remove('hidden');
+                buttons[1].classList.add('active');
+                buttons[0].classList.remove('active');
+            }
+        }
+
+        function handleAction() {
+            const status = document.getElementById('status-display');
+            status.innerText = "Status: Processing...";
+            
+            // Simulating a process
+            setTimeout(() => {
+                status.innerText = "Status: Complete";
+                alert("Operation successful!");
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

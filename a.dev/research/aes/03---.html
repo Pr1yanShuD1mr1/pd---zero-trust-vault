@@ -1,0 +1,81 @@
+<style> body{ white-space: pre; font-family: monospace; } </style>.
+
+https://www.baeldung.com/java-aes-encryption-decryption
+
+AES algorithm has six modes of operation:
+ a. ECB (Electronic Code Book)
+ b. CBC (Cipher Block Chaining)
+ c. CFB (Cipher FeedBack)
+ d. OFB (Output FeedBack)
+ e. CTR (Counter)
+ f. GCM (Galois/Counter Mode)
+
+
+
+JCE : java cryptography extension
+JCE is a framework that allows developers to easily integrate cryptographic services into their applications.
+JCE &isin; JRA(java cryptography archtecture)
+
+
+Key Generation: Creating a secret key for AES.
+Cipher Instantiation: Obtaining an instance of the Cipher class that implements the AES algorithm.
+Initialization: Initializing the Cipher object for either encryption (ENCRYPT_MODE) or decryption (DECRYPT_MODE) with the secret key and other necessary parameters.
+Execution: Performing the actual encryption or decryption using the doFinal() method.
+
+
+
+
+
+Java Cryptography Architecture (JCA) and JCE
+Java provides a robust, pluggable framework for cryptography known as the Java Cryptography Architecture (JCA). For AES, this includes:
+
+javax.crypto.Cipher         : The primary engine class for performing cryptographic operations, such as encryption and decryption.
+javax.crypto.Provider       : A class that implements cryptographic services, such as algorithms, key generation, and message digests. The Java platform comes with a default provider, and third-party providers like Bouncy Castle are also available.
+javax.crypto.KeyGenerator   : A factory class for generating secret keys for a specified algorithm (e.g., AES).
+javax.crypto.spec           : A package containing Spec classes that define the algorithm parameters, such as SecretKeySpec (for a byte array key), IvParameterSpec (for an Initialization Vector), and PBEKeySpec (for a password-derived key).
+
+
+
+
+
+
+Class / Interface    Purpose
+javax.crypto.Cipher                 The main class for encryption and decryption.
+javax.crypto.SecretKey              Interface for secret keys.
+javax.crypto.SecretKeySpec          Implementation of SecretKey from a byte array.
+javax.crypto.KeyGenerator           Generates secret keys for a specified algorithm.
+javax.crypto.spec.IvParameterSpec   Encapsulates an Initialization Vector (IV) used by block cipher modes like CBC.
+javax.crypto.spec.GCMParameterSpec  Encapsulates parameters for GCM mode.
+javax.crypto.spec.PBEKeySpec        Generates a secret key from a password using a specified algorithm and parameters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

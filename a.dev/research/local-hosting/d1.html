@@ -1,0 +1,108 @@
+<style> body{white-space: pre; font-family: monospace; font-weight: bolder;} </style>.
+
+
+
+com.sun.net.httpserver
+com.sun.net.httpserver 
+It is a lightweight HTTP server
+.part of the standard Java SE library, introduced in Java 6
+.designed for creating simple web servers and handlers within Java applications
+
+
+
+Embedded        : It runs within the same JVM as the application.
+Lightweight     : minimal dependencies and a small footprint.
+Simple API      : core classes are easy to understand and use for basic tasks.
+Configurable    : allow to set the port, bind to a specific address, and configure an Executor for handling requests.
+Extensible      : allow to define the logic for handling requests by implementing the HttpHandler interface.
+
+
+
+components
+HttpServer: The main class. It's the factory for the server. You get an instance by calling HttpServer.create(). It has methods like createContext() for routing and setExecutor().
+HttpHandler: The interface. This is the heart of the request handling logic. I need to explain the handle(HttpExchange exchange) method. This method receives the request and is where you generate the response.
+HttpExchange: The object that represents a single request-response cycle. It's passed to the HttpHandler. It contains methods to get the request method (getRequestMethod()), request headers (getRequestHeaders()), response code (sendResponseHeaders()), and the response body (getResponseBody()). This is a critical object to explain.
+Executor: This is a key design point for concurrency. You can provide your own ExecutorService (like a fixed thread pool) to manage how requests are processed. If you don't, the server provides its own default executor. I should explain why this is important (resource management).
+Server Interface: Mention this is the parent interface for HttpServer. It's good practice for completeness but less used in day-to-day code.
+
+
+
+
+com.sun.net.httpserver
+com.sun.net.httpserver is a lightweight, extensible HTTP server library included in the Java Standard Edition (since Java 6) and the Java Platform, Enterprise Edition (since Java EE 6). It is part of the jdk.httpserver module. The library is intended primarily for development, testing, and simple applications that need to embed an HTTP server without adding a large external dependency. It is not designed for high-performance, production-grade scenarios, where dedicated servers like Netty, Jetty, or embedded Tomcat are typically preferred.
+
+. Core Concepts
+2.1. HttpServer
+The HttpServer class is the central component of the library. It is responsible for creating, configuring, and managing the server's lifecycle. An HttpServer instance is created using a factory method, HttpServer.create(). It is configured by associating it with one or more HttpHandler instances via createContext(), which maps specific URI patterns to request handlers. The server is started with the start() method, and can be gracefully stopped with the stop() method.
+
+2.2. HttpHandler
+The HttpHandler interface defines the contract for processing an HTTP request. It contains a single abstract method, handle(HttpExchange exchange), which is invoked for each incoming request that matches a context defined on the HttpServer. The implementing class (or lambda expression) is responsible for inspecting the request, generating a response, and sending it back to the client. A single HttpServer can have multiple HttpHandlers, each linked to a different URI path or pattern.
+
+2.3. HttpExchange
+An HttpExchange object represents a single request-response
+interaction. It serves as the primary conduit of communication between the client and the HttpHandler. The HttpHandler receives an HttpExchange object for each request, which contains all the details of the incoming request (method, headers, path, query parameters, and body) as well as the necessary objects to construct and send the response. The HttpExchange provides methods such as getRequest() to access the incoming request and getResponseBody() to obtain an OutputStream for writing the response body. After the response body is sent, the handler must call sendResponseHeaders() with the appropriate status code and content length.
+
+2.4. Executors and Concurrency
+By default, the HttpServer uses a cached thread pool to process incoming requests concurrently. This means that each new request is typically handled by a new thread, which can be efficient for a small number of requests but can lead to resource exhaustion (thread explosion) under heavy load. For more control over concurrency, a developer can provide a custom java.util.concurrent.Executor instance to the server using the setExecutor(Executor executor) method. This allows for fine-tuning the thread pool's size, behavior, and lifecycle, enabling the server to manage resources more predictably and efficiently in high-traffic scenarios.
+
+
+
+Create a complete, runnable class (SimpleHttpServer).
+The code should be well-commented to explain each step.
+Step 1: Create the server instance (HttpServer.create(...)).
+Step 2: Create a handler (new MyHandler()). I'll make a separate inner class MyHandler that implements HttpHandler. This is good practice.
+Step 3: Create a context (server.createContext("/hello", handler)). This maps the /hello path to the handler.
+Step 4: Set the executor (server.setExecutor(Executors.newSingleThreadExecutor())). A single-threaded executor is simple and good for a basic example.
+Step 5: Start the server (server.start()).
+Step 6: Add a shutdown hook (Runtime.getRuntime().addShutdownHook(...)). This is a crucial best practice for any embedded server to ensure a graceful shutdown. 
+I must include this for a high-quality example.
+The handler's handle method should check the method (GET) and send back a simple "Hello World" response with a 200 OK status.
+
+
+
+
+---
+
+### 4. API Reference
+
+#### 4.1. HttpServer
+The `HttpServer` class is the main entry point for managing the server instance. It encapsulates the server's configuration and lifecycle.
+
+*   **`static HttpServer create(InetSocketAddress addr, int backlog)`**: Factory method to create an `HttpServer` instance bound to a specific network address (`InetSocketAddress`) and a queue size (`backlog`).
+*   **`void setExecutor(Executor executor)`**: Configures the `Executor` service that will handle incoming requests. This is used to control concurrency and thread management.
+*   **`void createContext(String uri, HttpHandler handler)`**: Associates a specified URI pattern (e.g., "/" or "/api/*") with an `HttpHandler`. The handler will be invoked for any request whose path starts with the given URI.
+*   **`void start()`**: Starts the server, making it ready to accept connections.
+*   **`void stop(int delay)`**: Initiates a shutdown of the server. The `delay` parameter specifies the time in seconds to wait for in-flight requests to complete before terminating.
+*   **`int getPort()`**: Returns the port on which the server is listening.
+*   **`Set<String> getContexts()`**: Returns a set of all configured URI contexts.
+
+#### 4.2. HttpHandler
+The `HttpHandler` interface defines the contract for processing HTTP requests. Implementations of this interface contain the application's business logic.
+
+*   **`void handle(HttpExchange exchange)`**: The core method of the handler. It is called by the server for each incoming request that matches a registered context. The method must inspect the `HttpExchange` object and construct a response, including sending headers and a body.
+*   **`HttpServer attach(String uri)`**: (Extension method) A Java 8+ feature that allows chaining context creation directly from a handler instance.
+
+#### 4.3. HttpExchange
+The `HttpExchange` object represents a single client request and the corresponding server response. It acts as a message container and is passed to the `HttpHandler`.
+
+*   **`HttpRequest getRequest()`**: Returns an object that provides access to the details of the incoming HTTP request, such as the method, headers, query parameters, and path.
+*   **`HttpResponse getResponse()`**: Returns an object to access the HTTP response being constructed.
+*   **`Headers getResponseHeaders()`**: Provides access to the response headers. The handler can set content types, caching policies, and other metadata here.
+*   **`void sendResponseHeaders(int statusCode, long contentLength)`**: Sends the HTTP status line and response headers to the client. This method must be called before writing the response body.
+*   **`OutputStream getResponseBody()`**: Returns an `OutputStream` to which the handler can write the response body, such as HTML, JSON, or binary data.
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.cs.stolaf.edu/docs/java/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html
+https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html
+https://www.javathinking.com/blog/simple-http-server-in-java-using-only-java-se-api/
+https://www.geeksforgeeks.org/java/how-to-set-up-a-basic-http-server-in-java/
