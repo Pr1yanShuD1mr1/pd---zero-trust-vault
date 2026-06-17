@@ -400,7 +400,7 @@ async function handleAction() {
             if (!response.ok) throw new Error(`Server returned status code: ${response.status}`);
 
             const blob = await response.blob();
-            const generatedKeyName = `vault_key_${selectedFileRef.name.split('.')[0]}.key`;
+            const generatedKeyName = `${selectedFileRef.name.split('.')[0]}.key`;
             
             triggerBlobDownload(blob, generatedKeyName);
 

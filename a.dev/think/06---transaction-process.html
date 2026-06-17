@@ -1,0 +1,143 @@
+<style> body{ white-space: pre; font-family: monospace; font-weight: bold; } </style>.
+
+
+
+for user easibily,
+it runs a local web server on localhost:8080 that interact with backend via API requests.
+
+
+
+
+
+1st Phase
+File Upload & Key Generation
+
+client side streams file as a raw binary file to the server. 
+server encrypt the file chunk-by-chunk, commits it to disk,
+server generates & return an cryptographic key to client as a downloadable attachment.
+
+
+Request Constraints
+"""
+POST /putFile HTTP/1.1
+Host: localhost:8080            
+Content-Type: application/octet-stream
+X-Original-Filename: secretFile.ext
+
+[RAW BINARY DATA STREAM OVER WEB SOCKET CONNECTIONS]
+"""
+
+where,
+<table border="2px solid black">
+    <tr> <td rowspan="3">Request Line</td> 
+         <td>POST</td> <td>REST API, which tells the server that the client is sending data to be processed or stored.</td> </tr>
+    <tr> <td>/putFile</td> <td>API route on the server that handles the upload logic.</td> </tr>
+    <tr> <td>HTTP/1.1</td> <td>version of HTTP protocol being used.</td> </tr>
+    <tr> <td rowspan="3">Headers</td> 
+         <td>Host: localhost:8080</td> <td>Specifies the domain and port of the server receiving the request</td> </tr>
+    <tr> <td>Content-Type: application/octet-stream</td> <td>it tells the server that the body of the request is arbitrary binary data. <br> It signals to the backend that it shouldn't try to parse the body as JSON, XML, <br> but rather just read it as a stream of bytes.</td> </tr>
+    <tr> <td>X-Original-Filename: secretFile.ext</td> <td>tell the server what the file should be named once it is saved.</td> </tr>
+    <tr> <td>Body</td> 
+         <td>[RAW BINARY DATA STREAM]</td> <td>raw binary data streaming over web socket connection</td> </tr>
+</table>
+
+
+Response Constraints
+"""
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="secretFile.ext.key"
+
+data(key)...
+"""
+
+where,
+<table border="3px solid black">
+    <tr> <td rowspan="3">Status Line</td> 
+         <td>HTTP/1.1</td> <td>version of HTTP protocol being used.</td> </tr>
+    <tr> <td>200</td> <td>standard HTTP status code for "Success."</td> </tr>
+    <tr> <td>OK</td> <td>human-readable explanation of the 200 status code.</td> </tr>
+    <tr> <td rowspan="2">Headers</td> 
+         <td>Content-Type: application/octet-stream</td> <td>tells the receiving client that the body of the response contains arbitrary binary data.</td> </tr>
+    <tr> <td>Content-Disposition: attachment; filename="secretFile.ext.key"</td> <td>tell the browser to save it their disk with given file name.</td> </tr>
+    <tr> <td>Response Body</td> 
+         <td>data(key)...</td> <td>raw content of file being downloaded as Base64-encoded string</td> </tr>
+</table>
+
+
+
+
+
+
+
+
+
+2nd Phase 
+Key Upload & File Retrieval
+
+client submit the key as based-64 encoded string to server.
+server validates the signature, then locates, decrypt, assemble the associated chunks to original file.
+server return original file as raw binary stream back to client.
+
+
+Request Constraints
+"""
+POST /getFile HTTP/1.1
+Host: localhost:8080
+Content-Type: text/plain
+
+data(key)...
+"""
+
+where,
+<table border="2px solid black">
+    <tr> <td rowspan="3">Request Line</td> 
+         <td>POST</td> <td>REST API, which tells the server that the client is sending data to be processed or stored.</td> </tr>
+    <tr> <td>/putFile</td> <td>API route on the server that handles the upload logic.</td> </tr>
+    <tr> <td>HTTP/1.1</td> <td>version of HTTP protocol being used.</td> </tr>
+    <tr> <td rowspan="2">Headers</td>
+         <td>Host: localhost:8080</td> <td>Specifies the domain and port of the server receiving the request</td> </tr>
+    <tr> <td>Content-Type: text/plain</td> <td>it describes the format of the data attached in the body of the request.<br> It tells the server to expect unformatted, raw text.</td> </tr>
+    <tr> <td>body</td> <td>data(key)...</td> <td>Base64-encoded key text as string</td> </tr>
+</table>
+
+
+Response Constraints
+"""
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="core_engineering_specs.pdf"
+
+[RAW BINARY DATA STREAM]
+"""
+
+where,
+<table border="3px solid black">
+    <tr> <td rowspan="3">Status Line</td> 
+         <td>HTTP/1.1</td> <td>version of HTTP protocol being used.</td> </tr>
+    <tr> <td>200</td> <td>standard HTTP status code for "Success."</td> </tr>
+    <tr> <td>OK</td> <td>human-readable explanation of the 200 status code.</td> </tr>
+    <tr> <td rowspan="2">Headers</td> 
+         <td>Content-Type: application/octet-stream</td> <td>tells the receiving client that the body of the response contains arbitrary binary data.</td> </tr>
+    <tr> <td>Content-Disposition: attachment; filename="secretFile.ext"</td> <td>tell the browser to save it their disk with given file name.</td> </tr>
+    <tr> <td>Body</td> 
+         <td>[RAW BINARY DATA STREAM]</td> <td>raw binary data streaming over web socket connection</td> </tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

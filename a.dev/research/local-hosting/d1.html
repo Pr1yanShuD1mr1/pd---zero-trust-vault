@@ -63,36 +63,33 @@ The handler's handle method should check the method (GET) and send back a simple
 
 ---
 
-### 4. API Reference
+4. API Reference
 
-#### 4.1. HttpServer
-The `HttpServer` class is the main entry point for managing the server instance. It encapsulates the server's configuration and lifecycle.
+HttpServer
+HttpServer class is the main entry point for managing the server instance. It encapsulates the server's configuration and lifecycle.
 
-*   **`static HttpServer create(InetSocketAddress addr, int backlog)`**: Factory method to create an `HttpServer` instance bound to a specific network address (`InetSocketAddress`) and a queue size (`backlog`).
-*   **`void setExecutor(Executor executor)`**: Configures the `Executor` service that will handle incoming requests. This is used to control concurrency and thread management.
-*   **`void createContext(String uri, HttpHandler handler)`**: Associates a specified URI pattern (e.g., "/" or "/api/*") with an `HttpHandler`. The handler will be invoked for any request whose path starts with the given URI.
-*   **`void start()`**: Starts the server, making it ready to accept connections.
-*   **`void stop(int delay)`**: Initiates a shutdown of the server. The `delay` parameter specifies the time in seconds to wait for in-flight requests to complete before terminating.
-*   **`int getPort()`**: Returns the port on which the server is listening.
-*   **`Set<String> getContexts()`**: Returns a set of all configured URI contexts.
+   static HttpServer create(InetSocketAddress addr, int backlog): Factory method to create an HttpServer instance bound to a specific network address (InetSocketAddress) and a queue size (backlog).
+   void setExecutor(Executor executor): Configures the Executor service that will handle incoming requests. This is used to control concurrency and thread management.
+   void createContext(String uri, HttpHandler handler): Associates a specified URI pattern (e.g., "/" or "/api/") with an HttpHandler. The handler will be invoked for any request whose path starts with the given URI.
+   void start(): Starts the server, making it ready to accept connections.
+   void stop(int delay): Initiates a shutdown of the server. The delay parameter specifies the time in seconds to wait for in-flight requests to complete before terminating.
+   int getPort(): Returns the port on which the server is listening.
+   Set&lt;String&gt; getContexts(): Returns a set of all configured URI contexts.
 
-#### 4.2. HttpHandler
-The `HttpHandler` interface defines the contract for processing HTTP requests. Implementations of this interface contain the application's business logic.
+HttpHandler
+The HttpHandler interface defines the contract for processing HTTP requests. Implementations of this interface contain the application's business logic.
 
-*   **`void handle(HttpExchange exchange)`**: The core method of the handler. It is called by the server for each incoming request that matches a registered context. The method must inspect the `HttpExchange` object and construct a response, including sending headers and a body.
-*   **`HttpServer attach(String uri)`**: (Extension method) A Java 8+ feature that allows chaining context creation directly from a handler instance.
+   void handle(HttpExchange exchange): The core method of the handler. It is called by the server for each incoming request that matches a registered context. The method must inspect the HttpExchange object and construct a response, including sending headers and a body.
+   HttpServer attach(String uri): (Extension method) A Java 8+ feature that allows chaining context creation directly from a handler instance.
 
-#### 4.3. HttpExchange
-The `HttpExchange` object represents a single client request and the corresponding server response. It acts as a message container and is passed to the `HttpHandler`.
+HttpExchange
+HttpExchange object represents a single client request and the corresponding server response. It acts as a message container and is passed to the HttpHandler.
 
-*   **`HttpRequest getRequest()`**: Returns an object that provides access to the details of the incoming HTTP request, such as the method, headers, query parameters, and path.
-*   **`HttpResponse getResponse()`**: Returns an object to access the HTTP response being constructed.
-*   **`Headers getResponseHeaders()`**: Provides access to the response headers. The handler can set content types, caching policies, and other metadata here.
-*   **`void sendResponseHeaders(int statusCode, long contentLength)`**: Sends the HTTP status line and response headers to the client. This method must be called before writing the response body.
-*   **`OutputStream getResponseBody()`**: Returns an `OutputStream` to which the handler can write the response body, such as HTML, JSON, or binary data.
-
-
-
+   HttpRequest getRequest(): Returns an object that provides access to the details of the incoming HTTP request, such as the method, headers, query parameters, and path.
+   HttpResponse getResponse(): Returns an object to access the HTTP response being constructed.
+   Headers getResponseHeaders(): Provides access to the response headers. The handler can set content types, caching policies, and other metadata here.
+   void sendResponseHeaders(int statusCode, long contentLength): Sends the HTTP status line and response headers to the client. This method must be called before writing the response body.
+   OutputStream getResponseBody(): Returns an OutputStream to which the handler can write the response body, such as HTML, JSON, or binary data.
 
 
 

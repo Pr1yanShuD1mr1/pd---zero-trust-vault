@@ -1,0 +1,1 @@
+temporary directory dedicated to holding partitioned chunks of encrypted files.

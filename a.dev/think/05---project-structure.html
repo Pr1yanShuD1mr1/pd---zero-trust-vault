@@ -1,0 +1,70 @@
+<style> body{ white-space: pre; font-family: monospace; font-weight: bold; } </style>.
+
+
+
+
+    +-- ?? app.exe
+    +-- ?? a.dev/
+    +-- ?? b.src/
+    |   +-- ?? 0x.java
+    |   +-- ?? AES256.java
+    |   +-- ?? App.java
+    |   +-- ?? envReader.java
+    |   +-- ?? Executioner.java
+    |   +-- ?? RouteController.java
+    |   +-- ?? VaultEngine.java
+    +-- ?? c.res/
+    |   +-- ?? ascii-art---by-vagonparovoz.txt
+    |   +-- ?? Images/
+    |   |   +-- ?? feelGood.gif
+    |   +-- ?? ui-shell-a7.html
+    +-- ?? d.out/
+    |   +-- ?? com/
+    |   |   +-- ?? myapp/
+    |   |       +-- ?? AES256.class
+    |   |       +-- ?? App.class
+    |   |       +-- ?? envReader.class
+    |   |       +-- ?? Executioner.class
+    |   |       +-- ?? FileSharder$AES256.class
+    |   |       +-- ?? FileSharder.class
+    |   |       +-- ?? RouteController.class
+    |   |       +-- ?? VaultEngine$AES256.class
+    |   |       +-- ?? VaultEngine.class
+    |   +-- ?? config.properties
+    +-- ?? e.files/
+    +-- ?? f.records/
+        +-- ?? records.txt
+
+
+
+
+
+parent directory 
+
+app.exe     : primary executable file used to launch and initiate the application directly.
+b.src/      : source code repository containing all .java files for the application's individual classes and software components.
+c.res/      : resource directory housing multimedia assets required by the application.
+d.out/      : output directory containing the compiled .class bytecode files that correspond to the Java source code in the src directory.
+e.files/    : temporary directory dedicated to holding partitioned chunks of encrypted files.
+f.records/  : temporary directory containing records that map file metadata to the specific sequence of their corresponding encrypted chunks.
+
+
+
+
+
+|-- b.src/
+│   ├── App.java              : Serves as the primary entry point, initialising application
+│   ├── Executioner.java      : Manages underlying socket connections
+│   ├── envReader.java        : load environment configurations.
+│   ├── RouteController.java  : handles the local routing logic
+│   ├── VaultEngine.java      : data processing pipeline
+│   └── AES256.java           : cryptography cipher
+
+
+
+
+
+
+
+
+

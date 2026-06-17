@@ -45,10 +45,10 @@ public class LocalServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
 
-            String response = "<html><body>"
-                    + "<h1>Hello from Java Server!</h1>"
-                    + "<p>Server is running on localhost:8080</p>"
-                    + "</body></html>";
+            String response = "&lt;html&gt;&lt;body&gt;"
+                    + "&lt;h1&gt;Hello from Java Server!&lt;/h1&gt;"
+                    + "&lt;p&gt;Server is running on localhost:8080&lt;/p&gt;"
+                    + "&lt;/body&gt;&lt;/html&gt;";
 
             exchange.sendResponseHeaders(200, response.length());
 
